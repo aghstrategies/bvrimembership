@@ -1,12 +1,2 @@
 # bvrimembership
-(*FIXME: In one or two paragraphs, describe what the extension does and why one would download it. *)
-
-This is an [extension for CiviCRM](https://docs.civicrm.org/sysadmin/en/latest/customize/extensions/), licensed under [AGPL-3.0](LICENSE.txt).
-
-## Getting Started
-
-(* FIXME: Where would a new user navigate to get started? What changes would they see? *)
-
-## Known Issues
-
-(* FIXME *)
+This extension adds fields to enter additional owner information when signing up or renewing your membership. Doing so creates a relationship between the organization and the individual.
