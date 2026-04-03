@@ -7,7 +7,7 @@ require_once 'bvrimembership.civix.php';
 
 use CRM_Bvrimembership_ExtensionUtil as E;
 
-function bvrimembership_civicrm_postProcess($formName, &$form) {
+function bvrimembership_civicrm_preProcess($formName, &$form) {
    if ($formName == "CRM_Contribute_Form_Contribution_ThankYou" && isset($form->_id)) {
      $value = \Civi\Api4\ContributionPage::get(FALSE)
        ->addSelect('additional_details.redirect_url')
