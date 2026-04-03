@@ -17,8 +17,10 @@ function bvrimembership_civicrm_preProcess($formName, &$form) {
      if (!empty($value['Additional_Details.Redirect_url'])) {
        CRM_Utils_System::redirect($value['Additional_Details.Redirect_url']);
      }
+     if ($form->_id == 2) {
+       CRM_Core_Session::setStatus(E::ts("Please take a minute to update the Owners on file for your property."), 'Thank You for your Membership', 'no-popup');
+     }
    }
-   CRM_Core_Session::setStatus(E::ts("Please take a minute to update the Owners on file for your property."), 'Thank You for your Membership', 'no-popup');
 }
 
 /**
