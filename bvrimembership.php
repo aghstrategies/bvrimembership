@@ -18,6 +18,7 @@ function bvrimembership_civicrm_preProcess($formName, &$form) {
        CRM_Utils_System::redirect($value['Additional_Details.Redirect_url']);
      }
    }
+   CRM_Core_Session::setStatus(E::ts("Please take a minute to update the Owners on file for your property."), 'Thank You for your Membership', 'no-popup');
 }
 
 /**
