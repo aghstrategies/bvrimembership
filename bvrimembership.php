@@ -10,12 +10,12 @@ use CRM_Bvrimembership_ExtensionUtil as E;
 function bvrimembership_civicrm_preProcess($formName, &$form) {
    if ($formName == "CRM_Contribute_Form_Contribution_ThankYou" && isset($form->_id)) {
      $value = \Civi\Api4\ContributionPage::get(FALSE)
-       ->addSelect('additional_details.redirect_url')
+       ->addSelect('Additional_Details.Redirect_url')
        ->addWhere('id', '=', $form->_id)
        ->execute()
        ->first();
-     if (!empty($value['additional_details.redirect_url'])) {
-       CRM_Utils_System::redirect($value['additional_details.redirect_url']);
+     if (!empty($value['Additional_Details.Redirect_url'])) {
+       CRM_Utils_System::redirect($value['Additional_Details.Redirect_url']);
      }
    }
 }
