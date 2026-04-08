@@ -17,10 +17,57 @@ function bvrimembership_civicrm_preProcess($formName, &$form) {
      if (!empty($value['Additional_Details.Redirect_url'])) {
        CRM_Utils_System::redirect($value['Additional_Details.Redirect_url']);
      }
+
+     // Set primary owner when contribution form id 2 is submitted
      if ($form->_id == 2) {
-       CRM_Core_Session::setStatus(E::ts("Please take a minute to update the Owners on file for your property."), 'Thank You for your Membership', 'no-popup');
+       if (isset($form->_params['onbehalf_contact_id']) && isset($form->_params['contactID'])) {
+         $relationships = \Civi\Api4\Relationship::get(FALSE)
+           ->addSelect('Relationships.Is_Primary_', 'id')
+           ->addClause('OR', ['AND', [['contact_id_a', '=', $form->_params['onbehalf_contact_id']], ['contact_id_b', '=', $form->_params['contactID']]]],
+           ['AND', [['contact_id_a', '=', $form->_params['contactID']], ['contact_id_b', '=', $form->_params['onbehalf_contact_id']]]])
+           ->setLimit(1)
+           ->execute();
+         foreach ($relationships as $relationship) {
+           if ($relationship['id'] > 0) {
+             $results = \Civi\Api4\Relationship::update(FALSE)
+               ->addValue('Relationships.Is_Primary_', TRUE)
+               ->addWhere('id', '=', $relationship['id'])
+               ->execute();
+           }
+         }
+       }
+
+       // Show some help text after redirecting - Doesn't show up on formbuilder form at the moment
+       // CRM_Core_Session::setStatus(E::ts("Please take a minute to update the Owners on file for your property."), 'Thank You for your Membership', 'no-popup');
+
+       // For Testing
+       // echo "<pre>";
+       // print_r($form->_params);
+       // echo "</pre>";
+       // die();
      }
    }
+}
+
+function bvrimembership_civicrm_custom( $op, $groupID, $entityID, &$params ) {
+  if ( $op == 'create' || $op == 'edit' ) {
+    foreach ($params as $key => $fieldInfo) {
+      if ($fieldInfo['entity_table'] == 'civicrm_relationship' && $fieldInfo['custom_field_id'] == 12 && $fieldInfo['custom_group_id'] == 7 && $fieldInfo['value'] == 1) {
+        $primRelationships = \Civi\Api4\Relationship::get(FALSE)
+          ->addWhere('id', '=', $fieldInfo['entity_id'])
+          ->setLimit(1)
+          ->execute();
+        foreach ($primRelationships as $rel) {
+          $results = \Civi\Api4\Relationship::update(FALSE)
+            ->addValue('Relationships.Is_Primary_', FALSE)
+            ->addWhere('contact_id_b', '=', $rel['contact_id_b'])
+            ->addWhere('Relationships.Is_Primary_', '=', TRUE)
+            ->addWhere('id', '!=', $fieldInfo['entity_id'])
+            ->execute();
+        }
+      }
+    }
+  }
 }
 
 /**
