@@ -12,11 +12,13 @@ function bvrimembership_civicrm_preProcess($formName, &$form) {
 
      // Set primary owner when contribution form id 2 is submitted
      if ($form->_id == 2) {
-       if (isset($form->_params['onbehalf_contact_id']) && isset($form->_params['contactID'])) {
+       if (isset($form->_params['onbehalfof_id']) && isset($form->_contactID)) {
          $relationships = \Civi\Api4\Relationship::get(FALSE)
            ->addSelect('Owner_Details.Is_Primary_', 'id')
-           ->addClause('OR', ['AND', [['contact_id_a', '=', $form->_params['onbehalf_contact_id']], ['contact_id_b', '=', $form->_params['contactID']]]],
-           ['AND', [['contact_id_a', '=', $form->_params['contactID']], ['contact_id_b', '=', $form->_params['onbehalf_contact_id']]]])
+           ->addWhere('contact_id_a', '=', $form->_contactID)
+           ->addWhere('contact_id_b', '=', $form->_params['onbehalfof_id'])
+           // ->addClause('OR', ['AND', [['contact_id_a', '=', $form->_params['onbehalf_contact_id']], ['contact_id_b', '=', $form->_params['contactID']]]],
+           // ['AND', [['contact_id_a', '=', $form->_params['contactID']], ['contact_id_b', '=', $form->_params['onbehalf_contact_id']]]])
            ->setLimit(1)
            ->execute();
          foreach ($relationships as $relationship) {
@@ -38,7 +40,7 @@ function bvrimembership_civicrm_preProcess($formName, &$form) {
        // echo "</pre>";
        // die();
      }
-     
+
      $value = \Civi\Api4\ContributionPage::get(FALSE)
        ->addSelect('Additional_Details.Redirect_url')
        ->addWhere('id', '=', $form->_id)
