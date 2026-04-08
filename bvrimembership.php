@@ -22,7 +22,7 @@ function bvrimembership_civicrm_preProcess($formName, &$form) {
      if ($form->_id == 2) {
        if (isset($form->_params['onbehalf_contact_id']) && isset($form->_params['contactID'])) {
          $relationships = \Civi\Api4\Relationship::get(FALSE)
-           ->addSelect('Relationships.Is_Primary_', 'id')
+           ->addSelect('Owner_Details.Is_Primary_', 'id')
            ->addClause('OR', ['AND', [['contact_id_a', '=', $form->_params['onbehalf_contact_id']], ['contact_id_b', '=', $form->_params['contactID']]]],
            ['AND', [['contact_id_a', '=', $form->_params['contactID']], ['contact_id_b', '=', $form->_params['onbehalf_contact_id']]]])
            ->setLimit(1)
@@ -30,7 +30,7 @@ function bvrimembership_civicrm_preProcess($formName, &$form) {
          foreach ($relationships as $relationship) {
            if ($relationship['id'] > 0) {
              $results = \Civi\Api4\Relationship::update(FALSE)
-               ->addValue('Relationships.Is_Primary_', TRUE)
+               ->addValue('Owner_Details.Is_Primary_', TRUE)
                ->addWhere('id', '=', $relationship['id'])
                ->execute();
            }
@@ -59,9 +59,9 @@ function bvrimembership_civicrm_custom( $op, $groupID, $entityID, &$params ) {
           ->execute();
         foreach ($primRelationships as $rel) {
           $results = \Civi\Api4\Relationship::update(FALSE)
-            ->addValue('Relationships.Is_Primary_', FALSE)
+            ->addValue('Owner_Details.Is_Primary_', FALSE)
             ->addWhere('contact_id_b', '=', $rel['contact_id_b'])
-            ->addWhere('Relationships.Is_Primary_', '=', TRUE)
+            ->addWhere('Owner_Details.Is_Primary_', '=', TRUE)
             ->addWhere('id', '!=', $fieldInfo['entity_id'])
             ->execute();
         }
