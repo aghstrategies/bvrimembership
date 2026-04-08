@@ -27,7 +27,7 @@ function bvrimembership_civicrm_preProcess($formName, &$form) {
         }
        }
        // IF update find org id
-       elseif (issset($form->_params['onbehalfof_id'])) {
+       elseif (isset($form->_params['onbehalfof_id'])) {
          $orgId = $form->_params['onbehalfof_id'];
        }
 
