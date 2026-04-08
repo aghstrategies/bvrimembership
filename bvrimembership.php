@@ -9,14 +9,6 @@ use CRM_Bvrimembership_ExtensionUtil as E;
 
 function bvrimembership_civicrm_preProcess($formName, &$form) {
    if ($formName == "CRM_Contribute_Form_Contribution_ThankYou" && isset($form->_id)) {
-     $value = \Civi\Api4\ContributionPage::get(FALSE)
-       ->addSelect('Additional_Details.Redirect_url')
-       ->addWhere('id', '=', $form->_id)
-       ->execute()
-       ->first();
-     if (!empty($value['Additional_Details.Redirect_url'])) {
-       CRM_Utils_System::redirect($value['Additional_Details.Redirect_url']);
-     }
 
      // Set primary owner when contribution form id 2 is submitted
      if ($form->_id == 2) {
@@ -28,7 +20,7 @@ function bvrimembership_civicrm_preProcess($formName, &$form) {
            ->setLimit(1)
            ->execute();
          foreach ($relationships as $relationship) {
-           if ($relationship['id'] > 0) {
+           if (isset($relationship['id'])) {
              $results = \Civi\Api4\Relationship::update(FALSE)
                ->addValue('Owner_Details.Is_Primary_', TRUE)
                ->addWhere('id', '=', $relationship['id'])
@@ -45,6 +37,15 @@ function bvrimembership_civicrm_preProcess($formName, &$form) {
        // print_r($form->_params);
        // echo "</pre>";
        // die();
+     }
+     
+     $value = \Civi\Api4\ContributionPage::get(FALSE)
+       ->addSelect('Additional_Details.Redirect_url')
+       ->addWhere('id', '=', $form->_id)
+       ->execute()
+       ->first();
+     if (!empty($value['Additional_Details.Redirect_url'])) {
+       CRM_Utils_System::redirect($value['Additional_Details.Redirect_url']);
      }
    }
 }
