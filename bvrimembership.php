@@ -11,12 +11,32 @@ function bvrimembership_civicrm_preProcess($formName, &$form) {
    if ($formName == "CRM_Contribute_Form_Contribution_ThankYou" && isset($form->_id)) {
 
      // Set primary owner when contribution form id 2 is submitted
-     if ($form->_id == 2) {
-       if (isset($form->_params['onbehalfof_id']) && isset($form->_contactID)) {
+     if ($form->_id == 2 && isset($form->_contactID)) {
+       $orgId = NULL;
+
+       // If create find org id
+       if (isset($form->_params['membershipID'])) {
+        $memberships = \Civi\Api4\Membership::get(FALSE)
+          ->addSelect('contact_id')
+          ->addWhere('id', '=', $form->_params['membershipID'])
+          ->addWhere('is_primary_member', '=', TRUE)
+          ->setLimit(1)
+          ->execute();
+        foreach ($memberships as $membership) {
+          $orgId = $membership['contact_id'];
+        }
+       }
+       // IF update find org id
+       elseif (issset($form->_params['onbehalfof_id'])) {
+         $orgId = $form->_params['onbehalfof_id'];
+       }
+
+       // If we have an org id
+       if ($orgId) {
          $relationships = \Civi\Api4\Relationship::get(FALSE)
            ->addSelect('Owner_Details.Is_Primary_', 'id')
            ->addWhere('contact_id_a', '=', $form->_contactID)
-           ->addWhere('contact_id_b', '=', $form->_params['onbehalfof_id'])
+           ->addWhere('contact_id_b', '=', $orgId)
            // ->addClause('OR', ['AND', [['contact_id_a', '=', $form->_params['onbehalf_contact_id']], ['contact_id_b', '=', $form->_params['contactID']]]],
            // ['AND', [['contact_id_a', '=', $form->_params['contactID']], ['contact_id_b', '=', $form->_params['onbehalf_contact_id']]]])
            ->setLimit(1)
