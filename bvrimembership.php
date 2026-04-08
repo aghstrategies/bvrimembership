@@ -52,7 +52,7 @@ function bvrimembership_civicrm_preProcess($formName, &$form) {
 function bvrimembership_civicrm_custom( $op, $groupID, $entityID, &$params ) {
   if ( $op == 'create' || $op == 'edit' ) {
     foreach ($params as $key => $fieldInfo) {
-      if ($fieldInfo['entity_table'] == 'civicrm_relationship' && $fieldInfo['custom_field_id'] == 12 && $fieldInfo['custom_group_id'] == 7 && $fieldInfo['value'] == 1) {
+      if ($fieldInfo['entity_table'] == 'civicrm_relationship' && $fieldInfo['custom_field_id'] == 14 && $fieldInfo['custom_group_id'] == 6 && $fieldInfo['value'] == 1) {
         $primRelationships = \Civi\Api4\Relationship::get(FALSE)
           ->addWhere('id', '=', $fieldInfo['entity_id'])
           ->setLimit(1)
