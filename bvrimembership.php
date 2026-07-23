@@ -98,10 +98,10 @@ function bvrimembership_civicrm_custom( $op, $groupID, $entityID, &$params ) {
           ->setLimit(1)
           ->execute();
         // If they do not have a user send them an email and ask them to make an account
-        if ($uFMatches->rowCount == 0) {
+        if ($uFMatches->rowCount > 0) {
           $html = "<p>You have been designated the Primary Owner for your Bear Valley Property. To access your an account <a href='https://sandbox.bvri.aghstrategies.net/wp-login.php'>login</a> or <a href='https://sandbox.bvri.aghstrategies.net/wp-login.php?action=lostpassword'>reset your password</a> the email on file is {$contact['email_primary.email']}.</p>";
         }
-        elseif ($uFMatches->rowCount > 0) {
+        elseif ($uFMatches->rowCount == 0) {
           $html = "<p>You have been designated the Primary Owner for your Bear Valley Property. To create an account go to: https://sandbox.bvri.aghstrategies.net/civicrm/profile/create/?gid=22&reset=1 and enter:</p> <p>First Name: {$contact['first_name']},</p><p>Last Name: {$contact['last_name']},</p><p>Email: {$contact['email_primary.email']}</p>";
         }
         // Get Contact Details for email
