@@ -110,7 +110,7 @@ function bvrimembership_civicrm_custom( $op, $groupID, $entityID, &$params ) {
             $html = "<p>You have been designated the Primary Owner for your Bear Valley Property. To access your an account <a href='https://sandbox.bvri.aghstrategies.net/wp-login.php'>login</a> or <a href='https://sandbox.bvri.aghstrategies.net/wp-login.php?action=lostpassword'>reset your password</a> the email on file is {$contact['email_primary.email']}.</p>";
           }
           elseif ($uFMatches->rowCount == 0) {
-            $html = "<p>You have been designated the Primary Owner for your Bear Valley Property. To create an account go to: https://sandbox.bvri.aghstrategies.net/civicrm/profile/create/?gid=22&reset=1 and enter:</p> <p>First Name: {$contact['first_name']},</p><p>Last Name: {$contact['last_name']},</p><p>Email: {$contact['email_primary.email']}</p>";
+            $html = "<p>You have been designated the Primary Owner for your Bear Valley Property. To create an account go to: https://sandbox.bvri.aghstrategies.net/civicrm/profile/create/?gid=22&reset=1 and enter:</p> <p>First Name: {$contact['first_name']}</p><p>Last Name: {$contact['last_name']}</p><p>Email: {$contact['email_primary.email']}</p>";
           }
           // Send email about creating an account if they don't have one already
           list($domainEmailName, $domainEmailAddress) = CRM_Core_BAO_Domain::getNameAndEmail();
