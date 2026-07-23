@@ -76,6 +76,8 @@ function bvrimembership_civicrm_custom( $op, $groupID, $entityID, &$params ) {
   if ( $op == 'create' || $op == 'edit' ) {
     foreach ($params as $key => $fieldInfo) {
       if ($fieldInfo['entity_table'] == 'civicrm_relationship' && $fieldInfo['custom_field_id'] == 14 && $fieldInfo['custom_group_id'] == 6 && $fieldInfo['value'] == 1) {
+
+        // disable the old primary
         $primRelationships = \Civi\Api4\Relationship::get(FALSE)
           ->addWhere('id', '=', $fieldInfo['entity_id'])
           ->setLimit(1)
@@ -87,6 +89,43 @@ function bvrimembership_civicrm_custom( $op, $groupID, $entityID, &$params ) {
             ->addWhere('Owner_Details.Is_Primary_', '=', TRUE)
             ->addWhere('id', '!=', $fieldInfo['entity_id'])
             ->execute();
+        }
+
+        // Check if the new primary has a user
+        $uFMatches = \Civi\Api4\UFMatch::get(TRUE)
+          ->selectRowCount()
+          ->addWhere('contact_id', '=', $rel['contact_id_a'])
+          ->setLimit(1)
+          ->execute();
+
+        // If they do not have a user send them an email and ask them to make an account
+        if ($uFMatches->count == 0) {
+
+          // Get Contact Details for email
+          $contacts = \Civi\Api4\Contact::get(FALSE)
+            ->addSelect('email_primary.email', 'first_name', 'last_name', 'display_name')
+            ->addWhere('id', '=', $rel['contact_id_a'])
+            ->setLimit(1)
+            ->execute();
+          foreach ($contacts as $contact) {
+            // TODO Send email about creating an account if they don't have one already
+            list($domainEmailName, $domainEmailAddress) = CRM_Core_BAO_Domain::getNameAndEmail();
+            $html = "<p>You have been designated the Primary Owner for your Bear Valley Property. To create an account <a href='https://bvri.aghstrategies.net/civicrm/profile/create/?gid=22&reset=1'>here</a> and enter:</p> <p>First Name: {$contact['first_name']}</p> <p>Last Name: {$contact['last_name']},</p> <p>Email: {$contact['email_primary.email']}</p>";
+            $text = "You have been designated the Primary Owner for your Bear Valley Property. To create an account go to: https://bvri.aghstrategies.net/civicrm/profile/create/?gid=22&reset=1 and enter First Name: {$contact['first_name']}, Last Name: {$contact['last_name']}, Email: {$contact['email_primary.email']}";
+            $mailParams = [
+              // 'groupName' => 'Mailing Event ' . $component->component_type,
+              'subject' => "You have been designated the Primary Owner for your Bear Valley Property",
+              'from' => "\"{$domainEmailName}\" <{$domainEmailAddress}>",
+              'toEmail' => $contact['email_primary.email'],
+              'toName' => $contact['display_name'],
+              'replyTo' => CRM_Core_BAO_Domain::getNoReplyEmailAddress(),
+              'returnPath' => CRM_Core_BAO_Domain::getNoReplyEmailAddress(),
+              'html' => $html,
+              'text' => $text,
+              'contactId' => $rel['contact_id_a'],
+            ];
+            CRM_Utils_Mail::send($mailParams);
+          }
         }
       }
     }
