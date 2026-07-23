@@ -92,7 +92,7 @@ function bvrimembership_civicrm_custom( $op, $groupID, $entityID, &$params ) {
         }
 
         // Check if the new primary has a user
-        $uFMatches = \Civi\Api4\UFMatch::get(TRUE)
+        $uFMatches = \Civi\Api4\UFMatch::get(FALSE)
           ->selectRowCount()
           ->addWhere('contact_id', '=', $rel['contact_id_a'])
           ->setLimit(1)
