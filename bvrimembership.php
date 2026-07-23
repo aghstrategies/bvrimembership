@@ -99,32 +99,35 @@ function bvrimembership_civicrm_custom( $op, $groupID, $entityID, &$params ) {
           ->execute();
         // If they do not have a user send them an email and ask them to make an account
         if ($uFMatches->rowCount == 0) {
-
-          // Get Contact Details for email
-          $contacts = \Civi\Api4\Contact::get(FALSE)
-            ->addSelect('email_primary.email', 'first_name', 'last_name', 'display_name')
-            ->addWhere('id', '=', $rel['contact_id_a'])
-            ->setLimit(1)
-            ->execute();
-          foreach ($contacts as $contact) {
-            // TODO Send email about creating an account if they don't have one already
-            list($domainEmailName, $domainEmailAddress) = CRM_Core_BAO_Domain::getNameAndEmail();
-            $html = "<p>You have been designated the Primary Owner for your Bear Valley Property. To access your an account reset your password <a href='https://sandbox.bvri.aghstrategies.net/civicrm/profile/create/?gid=22&reset=1'>here</a> the email on file is {$contact['email_primary.email']}.</p>";
-            // $text = "You have been designated the Primary Owner for your Bear Valley Property. To create an account go to: https://sandbox.bvri.aghstrategies.net/civicrm/profile/create/?gid=22&reset=1 and enter First Name: {$contact['first_name']}, Last Name: {$contact['last_name']}, Email: {$contact['email_primary.email']}";
-            $mailParams = [
-              // 'groupName' => 'Mailing Event ' . $component->component_type,
-              'subject' => "You have been designated the Primary Owner for your Bear Valley Property",
-              'from' => "\"{$domainEmailName}\" <{$domainEmailAddress}>",
-              'toEmail' => $contact['email_primary.email'],
-              'toName' => $contact['display_name'],
-              'replyTo' => CRM_Core_BAO_Domain::getNoReplyEmailAddress(),
-              'returnPath' => CRM_Core_BAO_Domain::getNoReplyEmailAddress(),
-              'html' => $html,
-              // 'text' => $text,
-              'contactId' => $rel['contact_id_a'],
-            ];
-            CRM_Utils_Mail::send($mailParams);
-          }
+          $html = "<p>You have been designated the Primary Owner for your Bear Valley Property. To access your an account <a href='https://sandbox.bvri.aghstrategies.net/wp-login.php'>login</a> or <a href='https://sandbox.bvri.aghstrategies.net/wp-login.php?action=lostpassword'>reset your password</a> the email on file is {$contact['email_primary.email']}.</p>";
+        }
+        elseif ($uFMatches->rowCount > 0) {
+          $html = "<p>You have been designated the Primary Owner for your Bear Valley Property. To create an account go to: https://sandbox.bvri.aghstrategies.net/civicrm/profile/create/?gid=22&reset=1 and enter:</p> <p>First Name: {$contact['first_name']},</p><p>Last Name: {$contact['last_name']},</p><p>Email: {$contact['email_primary.email']}</p>";
+        }
+        // Get Contact Details for email
+        $contacts = \Civi\Api4\Contact::get(FALSE)
+          ->addSelect('email_primary.email', 'first_name', 'last_name', 'display_name')
+          ->addWhere('id', '=', $rel['contact_id_a'])
+          ->setLimit(1)
+          ->execute();
+        foreach ($contacts as $contact) {
+          // TODO Send email about creating an account if they don't have one already
+          list($domainEmailName, $domainEmailAddress) = CRM_Core_BAO_Domain::getNameAndEmail();
+          $html = "<p>You have been designated the Primary Owner for your Bear Valley Property. To access your an account reset your password <a href='https://sandbox.bvri.aghstrategies.net/civicrm/profile/create/?gid=22&reset=1'>here</a> the email on file is {$contact['email_primary.email']}.</p>";
+          // $text = "You have been designated the Primary Owner for your Bear Valley Property. To create an account go to: https://sandbox.bvri.aghstrategies.net/civicrm/profile/create/?gid=22&reset=1 and enter First Name: {$contact['first_name']}, Last Name: {$contact['last_name']}, Email: {$contact['email_primary.email']}";
+          $mailParams = [
+            // 'groupName' => 'Mailing Event ' . $component->component_type,
+            'subject' => "You have been designated the Primary Owner for your Bear Valley Property",
+            'from' => "\"{$domainEmailName}\" <{$domainEmailAddress}>",
+            'toEmail' => $contact['email_primary.email'],
+            'toName' => $contact['display_name'],
+            'replyTo' => CRM_Core_BAO_Domain::getNoReplyEmailAddress(),
+            'returnPath' => CRM_Core_BAO_Domain::getNoReplyEmailAddress(),
+            'html' => $html,
+            // 'text' => $text,
+            'contactId' => $rel['contact_id_a'],
+          ];
+          CRM_Utils_Mail::send($mailParams);
         }
       }
     }
