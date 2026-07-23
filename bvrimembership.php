@@ -110,8 +110,8 @@ function bvrimembership_civicrm_custom( $op, $groupID, $entityID, &$params ) {
           foreach ($contacts as $contact) {
             // TODO Send email about creating an account if they don't have one already
             list($domainEmailName, $domainEmailAddress) = CRM_Core_BAO_Domain::getNameAndEmail();
-            $html = "<p>You have been designated the Primary Owner for your Bear Valley Property. To create an account <a href='https://bvri.aghstrategies.net/civicrm/profile/create/?gid=22&reset=1'>here</a> and enter:</p> <p>First Name: {$contact['first_name']}</p> <p>Last Name: {$contact['last_name']},</p> <p>Email: {$contact['email_primary.email']}</p>";
-            $text = "You have been designated the Primary Owner for your Bear Valley Property. To create an account go to: https://bvri.aghstrategies.net/civicrm/profile/create/?gid=22&reset=1 and enter First Name: {$contact['first_name']}, Last Name: {$contact['last_name']}, Email: {$contact['email_primary.email']}";
+            $html = "<p>You have been designated the Primary Owner for your Bear Valley Property. To access your an account reset your password <a href='https://sandbox.bvri.aghstrategies.net/civicrm/profile/create/?gid=22&reset=1'>here</a> the email on file is {$contact['email_primary.email']}.</p>";
+            // $text = "You have been designated the Primary Owner for your Bear Valley Property. To create an account go to: https://sandbox.bvri.aghstrategies.net/civicrm/profile/create/?gid=22&reset=1 and enter First Name: {$contact['first_name']}, Last Name: {$contact['last_name']}, Email: {$contact['email_primary.email']}";
             $mailParams = [
               // 'groupName' => 'Mailing Event ' . $component->component_type,
               'subject' => "You have been designated the Primary Owner for your Bear Valley Property",
@@ -121,7 +121,7 @@ function bvrimembership_civicrm_custom( $op, $groupID, $entityID, &$params ) {
               'replyTo' => CRM_Core_BAO_Domain::getNoReplyEmailAddress(),
               'returnPath' => CRM_Core_BAO_Domain::getNoReplyEmailAddress(),
               'html' => $html,
-              'text' => $text,
+              // 'text' => $text,
               'contactId' => $rel['contact_id_a'],
             ];
             CRM_Utils_Mail::send($mailParams);
