@@ -97,9 +97,8 @@ function bvrimembership_civicrm_custom( $op, $groupID, $entityID, &$params ) {
           ->addWhere('contact_id', '=', $rel['contact_id_a'])
           ->setLimit(1)
           ->execute();
-
         // If they do not have a user send them an email and ask them to make an account
-        if ($uFMatches->count == 0) {
+        if ($uFMatches->rowCount == 0) {
 
           // Get Contact Details for email
           $contacts = \Civi\Api4\Contact::get(FALSE)
