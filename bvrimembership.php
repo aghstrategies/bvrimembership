@@ -110,7 +110,9 @@ function bvrimembership_civicrm_custom( $op, $groupID, $entityID, &$params ) {
             ->addValue('source', '""')
             ->addWhere('contact_id', '=', $rel['contact_id_a'])
             ->execute();
-          $html = "<p>You have been designated the Primary Owner for your Bear Valley Property. To access your an account <a href='https://sandbox.bvri.aghstrategies.net/wp-login.php'>login</a> or <a href='https://sandbox.bvri.aghstrategies.net/wp-login.php?action=lostpassword'>reset your password</a> the email on file is {$contact['email_primary.email']}.</p>";
+          $loginPageUrl = CRM_Utils_System::url('/wp-login.php');
+          $lostPassword = CRM_Utils_System::url('/wp-login.php?action=lostpassword');
+          $html = "<p>You have been designated the Primary Owner for your Bear Valley Property. To access your an account <a href='{$loginPageUrl}'>login</a> or <a href='{$lostPassword}'>reset your password</a> the email on file is {$contact['email_primary.email']}.</p>";
 
           // Toggle Language based on whether or not they have an account or need to create one
           // if ($uFMatches->rowCount > 0) {
