@@ -110,8 +110,8 @@ function bvrimembership_civicrm_custom( $op, $groupID, $entityID, &$params ) {
             ->addValue('source', '""')
             ->addWhere('contact_id', '=', $rel['contact_id_a'])
             ->execute();
-          $loginPageUrl = CRM_Utils_System::url('/wp-login.php');
-          $lostPassword = CRM_Utils_System::url('/wp-login.php?action=lostpassword');
+          $loginPageUrl = home_url('/wp-login.php');
+          $lostPassword = home_url('/wp-login.php?action=lostpassword');
           $html = "<p>You have been designated the Primary Owner for your Bear Valley Property. To access your an account <a href='{$loginPageUrl}'>login</a> or <a href='{$lostPassword}'>reset your password</a> the email on file is {$contact['email_primary.email']}.</p>";
 
           // Toggle Language based on whether or not they have an account or need to create one
