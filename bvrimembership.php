@@ -129,9 +129,13 @@ function bvrimembership_civicrm_custom( $op, $groupID, $entityID, &$params ) {
           $mailParams = [
             // 'groupName' => 'Mailing Event ' . $component->component_type,
             'subject' => "You have been designated the Primary Owner for your Bear Valley Property",
-            'from' => "\"{$domainEmailName}\" <{$domainEmailAddress}>",
-            'toEmail' => $contact['email_primary.email'],
-            'toName' => $contact['display_name'],
+	    'from' => "\"{$domainEmailName}\" <{$domainEmailAddress}>",
+
+	    // Send emails to Curt not new primary //
+	    'toEmail' => "bvrimembership@bvri.org",
+
+            // 'toEmail' => $contact['email_primary.email'],//
+	    'toName' => $contact['display_name'],
             'replyTo' => CRM_Core_BAO_Domain::getNoReplyEmailAddress(),
             'returnPath' => CRM_Core_BAO_Domain::getNoReplyEmailAddress(),
             'html' => $html,
